@@ -93,8 +93,8 @@ def clean_item(item: Dict[str, Any]) -> Dict[str, Any]:
         "Name": str(item.get("Name", "")).strip(),
         "Description": str(item.get("Description", "")).strip() if not pd.isna(item.get("Description", "")) else "",
         "Price": parse_price(item.get("Price", 0.0)),
-        "Old_Price": parse_price(item.get("Old_Price", 0.0)) if item.get("Old_Price") else None,
-        "Image_URL": str(item.get("Image_URL", "")),
+        "Old_Price": parse_price(item.get("Old_Price", 0.0)) if item.get("Old_Price") else 0.0,
+        "Image_URL": str(item.get("Image_URL", "https://admin.broadwaypizza.com.pk/Images/ProductImages/500x500-low-res-min.jpg")),
         "similarity": float(item.get("similarity", 0.0)),
         "source_file": str(item.get("source_file", "")),
     }
@@ -118,38 +118,7 @@ async def query_items(req: PromptRequest) -> Dict[str, Any]:
         context_lines.append(
             f"{i}. {cleaned['Name']} ({cleaned['Category']}) — Rs.{cleaned['Price']}. {cleaned['Description']}"
         )
-    
-    
-    sanitized_matches = []
-    for item in top_matches:
-        # --- Clean and convert Price ---
-        price_str = str(item.get('Price', '')).replace('from', '').replace('Rs.', '').replace(',', '').strip()
-        try:
-            item['Price'] = float(price_str)
-        except:
-            item['Price'] = 0.0
 
-        # --- Clean and convert Old_Price ---
-        old_price_str = str(item.get('Old_Price', '')).replace('from', '').replace('Rs.', '').replace(',', '').strip()
-        try:
-            item['Old_Price'] = float(old_price_str)
-        except:
-            item['Old_Price'] = 0.0
-
-        # --- Clean Description ---
-        desc = item.get('Description', '')
-        item['Description'] = str(desc) if desc and str(desc).lower() != "nan" else ""
-
-        # --- Rename Image URL to Image_URL ---
-        if 'Image URL' in item:
-            item['Image_URL'] = item.pop('Image URL')
-        elif 'Image_URL' not in item:
-            item['Image_URL'] = ""  # Fallback if neither is found
-
-        # Ensure float compatibility (Pydantic doesn't like np.float64)
-        item['similarity'] = float(item.get('similarity', 0.0))
-
-        sanitized_matches.append(item)
         
         
     full_prompt = PROMPT_TEMPLATE.format(
@@ -162,8 +131,7 @@ async def query_items(req: PromptRequest) -> Dict[str, Any]:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LLM call failed: {e}")
 
-    print(sanitized_matches)
     return {
-        "matches": sanitized_matches,
+        "matches": top_matches,
         "recommendation": llm_response
     }
