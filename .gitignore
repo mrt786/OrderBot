@@ -1,7 +1,26 @@
-Backend/*.env # Environment variables
-# Ignore environment variables file
-Backend/__pycache__/*
-# Ignore Python cache files
-orderbot_frontend/node_modules/*
-# Ignore Node.js modules
-orderbot_frontend/public/*
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment variables and virtual environments
+.env
+.venv/
+env/
+venv/
+
+# Ignore node_modules and build from frontend
+orderbot_frontend/node_modules/
+orderbot_frontend/dist/
+
+# Ignore entire inner OrderBot folder (not the outer one)
+OrderBot/
+
+# Ignore everything in Backend except main.py
+Backend/*
+!Backend/main.py
+
+# Ignore system files
+.DS_Store
+Thumbs.db

@@ -20,7 +20,6 @@ export default function App() {
         prompt: prompt,
       });
       
-
       setItems(response.data.matches || []);
       console.log(response.data.matches);
     } catch (err) {
