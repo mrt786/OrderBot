@@ -1,0 +1,7 @@
+Backend/*.env # Environment variables
+# Ignore environment variables file
+Backend/__pycache__/*
+# Ignore Python cache files
+orderbot_frontend/node_modules/*
+# Ignore Node.js modules
+orderbot_frontend/public/*
